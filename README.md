@@ -5,13 +5,10 @@
 Plakke (Frisian for *paste*) keeps your last 10 clips and lets you flick through them with one hand, the same
 way you flick between apps. Local only — no sync, no accounts, no network.
 
-```
- ┌───────┐ ┌───────┐ ┌═══════┐ ┌───────┐ ┌───────┐
- │ Link  │ │ Code  │ ║ Text  ║ │ Image │ │ Color │   ← frosted strip, centered on screen
- │ ...   │ │ ...   │ ║ ...   ║ │ ...   │ │ #4F8E │     selected card lifts and glows
- └───────┘ └───────┘ └═══════┘ └───────┘ └───────┘
-      release ⌥ paste · ⇧ plain text · 1–9 0 jump · ⌫ remove · esc
-```
+![The Plakke switcher: a frosted strip of clip cards centred on screen](docs/screenshots/switcher.png)
+
+The strip is centred on screen, floats above full-screen apps, and never takes focus. The selected
+card lifts and glows in its type's colour; pinned clips sit to the right of a thin divider.
 
 ## The switcher
 
@@ -71,8 +68,14 @@ Pasting moves the clip to the front of the strip, so the thing you just used is 
   The crop applies to the full-resolution original at paste time; the stored file is never touched,
   so the same clip still pastes whole later. On a photo, where there's no border to find, the
   rectangle just starts at the full image.
+
+  ![The crop editor, with the edge scan having trimmed the window border](docs/screenshots/crop.png)
+
 - **Peek.** Space opens a big preview above the strip: full text, the whole image, every file.
   The preview shows the transformed text if a transform is armed, so you see exactly what will land.
+
+  ![Peek open on a code clip with the Markdown transform armed](docs/screenshots/peek.png)
+
 - **Pinned clips.** Pins live to the right of a thin divider and never fall off the strip. Clear
   History leaves them alone. ⌥-click a clip in the menu bar to pin it from there too.
 - **Transforms.** Arm one with a single key, watch the peek update, release to paste. The hint row
@@ -145,6 +148,7 @@ Sources/Plakke/
   TextLines.swift         Unicode-aware line splitting + size caps, shared by the above
   Scheduling.swift        timers that keep firing while a menu is open
 Resources/AppIcon.icns    generated app icon (source: AppIcon-1024.png)
+docs/screenshots/         README images, rendered from the real views
 ```
 
 ## Changing the hotkey
