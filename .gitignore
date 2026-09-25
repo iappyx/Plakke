@@ -1,0 +1,17 @@
+# Swift / SwiftPM
+.build/
+.swiftpm/
+Package.resolved
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+
+# Build output
+Plakke.app/
+
+# macOS
+.DS_Store
+
+# Local only
+Tests/
+resume.sh
