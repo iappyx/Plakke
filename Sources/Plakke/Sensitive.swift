@@ -33,7 +33,10 @@ enum Sensitive {
         #"\b(?:r|s)k_(?:live|test)_[A-Za-z0-9]{20,}\b"#,    // Stripe
     ]
 
-    private static let privateKeyPattern = #"-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----"#
+    /// Any PEM private-key header. The single optional word this used to allow matched
+    /// `BEGIN RSA PRIVATE KEY` but not `BEGIN PGP PRIVATE KEY BLOCK`, so exporting a GPG secret key
+    /// went straight to the history file in plaintext.
+    private static let privateKeyPattern = #"-----BEGIN [A-Z0-9 ]*PRIVATE KEY( BLOCK)?-----"#
 
     static func looksSensitive(_ text: String) -> Bool {
         let scan = text.truncatedToUTF8(maxScanBytes)
