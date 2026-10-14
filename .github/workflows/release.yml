@@ -1,0 +1,74 @@
+# Builds Plakke.app on GitHub's macOS runners.
+# - Push a tag like v1.2.3: builds that version and publishes it as a GitHub Release with a zip.
+# - Run it by hand (Actions tab -> Release -> Run workflow): builds a test zip, downloadable from
+#   the run page. Nothing is published.
+# The app is ad-hoc signed (no Apple developer account), so users confirm it once via "Open Anyway".
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to create the release
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "VERSION=0.0.0-test" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build Plakke.app
+        run: ./build-app.sh
+
+      - name: Check the binary carries no build paths
+        run: |
+          if strings Plakke.app/Contents/MacOS/Plakke | grep -q "/Users/"; then
+            echo "::error::the built binary still contains /Users/ paths"
+            strings Plakke.app/Contents/MacOS/Plakke | grep "/Users/" | head
+            exit 1
+          fi
+          echo "clean: no absolute build paths in the binary"
+
+      - name: Zip
+        run: ditto -c -k --keepParent Plakke.app "Plakke-$VERSION.zip"
+
+      - name: Upload test build
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Plakke-${{ env.VERSION }}
+          path: Plakke-${{ env.VERSION }}.zip
+
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<EOF
+          A ⌘Tab-style clipboard switcher for macOS. Universal (Apple Silicon and Intel), macOS 14 or newer.
+
+          **Install:** download \`Plakke-$VERSION.zip\`, unzip it, and drag **Plakke.app** to your Applications folder.
+
+          **First launch:** Plakke is not notarized by Apple, so macOS blocks it the first time and says it
+          cannot verify the developer. Click **Done**, then open **System Settings → Privacy & Security**,
+          scroll down to Security, and click **Open Anyway** next to Plakke. Confirm once and it opens
+          normally from then on.
+
+          **Accessibility:** Plakke watches the ⌥ key and sends ⌘V, so macOS asks for Accessibility access.
+          Turn Plakke on in **System Settings → Privacy & Security → Accessibility**. It picks the change up
+          straight away — no relaunch needed.
+
+          Plakke lives in the menu bar and has no Dock icon. Hold ⌥, tap V, release to paste.
+          EOF
+          gh release create "$GITHUB_REF_NAME" "Plakke-$VERSION.zip" \
+            --title "Plakke $VERSION" --notes-file notes.md

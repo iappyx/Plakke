@@ -8,6 +8,7 @@ DerivedData/
 
 # Build output
 Plakke.app/
+Plakke-*.zip
 
 # macOS
 .DS_Store

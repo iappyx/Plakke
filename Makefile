@@ -1,19 +1,12 @@
 APP      := Plakke
-BUILD    := .build/release
 SIGN_ID  ?= -
 
 .PHONY: app run test clean
 
+# One bundler, shared with the release workflow — two would drift.
+# VERSION defaults to 0.0.0-dev; the workflow sets it from the git tag.
 app:
-	swift build -c release
-	rm -rf $(APP).app
-	mkdir -p $(APP).app/Contents/MacOS
-	cp $(BUILD)/$(APP) $(APP).app/Contents/MacOS/$(APP)
-	cp Info.plist $(APP).app/Contents/Info.plist
-	mkdir -p $(APP).app/Contents/Resources
-	cp Resources/AppIcon.icns $(APP).app/Contents/Resources/AppIcon.icns
-	codesign --force --sign "$(SIGN_ID)" $(APP).app
-	@echo "→ built $(APP).app"
+	@SIGN_ID="$(SIGN_ID)" ./build-app.sh
 
 run: app
 	open $(APP).app

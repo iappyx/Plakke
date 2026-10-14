@@ -100,13 +100,34 @@ Pasting moves the clip to the front of the strip, so the thing you just used is 
   with Reset to Defaults at the bottom. Every setting is declared once in `Settings.swift`; the menu
   is built from that list rather than hand-assembled, so the two can't drift apart.
 
+## Download
+
+Grab the latest zip from [**Releases**](https://github.com/iappyx/Plakke/releases/latest) — universal,
+for Apple Silicon and Intel, macOS 14 or newer.
+
+1. Unzip it and drag **Plakke.app** to your **Applications** folder.
+2. Open it. macOS will say it cannot verify the developer — Plakke is signed, but not notarized by
+   Apple, which needs a paid developer account. Click **Done**.
+3. Open **System Settings → Privacy & Security**, scroll down to **Security**, and click
+   **Open Anyway** next to Plakke. Confirm once; it opens normally from then on.
+4. On first launch Plakke asks for **Accessibility** access — it needs this to watch the ⌥ key and to
+   send ⌘V. Turn Plakke on in **System Settings → Privacy & Security → Accessibility**. The change is
+   picked up straight away, with no relaunch.
+
+Plakke has no Dock icon; look for the clipboard in the menu bar.
+
 ## Build & run
 
 Requires macOS 14+ and Xcode 15+ (for the Swift toolchain).
 
 ```sh
-make run          # swift build → assemble Plakke.app → open it
+make run          # build a universal Plakke.app and open it
+./build-app.sh    # the same build on its own; VERSION=1.2.3 sets the version
 ```
+
+Both go through `build-app.sh`, which is also what the release workflow runs — so a local build and a
+released one are assembled the same way. Without `VERSION` the app reports `0.0.0-dev`; releases take
+their version from the git tag.
 
 On first launch macOS asks for **Accessibility** access (needed to watch the ⌥ key and to send ⌘V).
 Flip the switch in System Settings → Privacy & Security → Accessibility and Plakke picks it up
@@ -149,6 +170,8 @@ Sources/Plakke/
   Scheduling.swift        timers that keep firing while a menu is open
 Resources/AppIcon.icns    generated app icon (source: AppIcon-1024.png)
 docs/screenshots/         README images, rendered from the real views
+build-app.sh              assembles the universal .app; used locally and by CI
+.github/workflows/        tag a vX.Y.Z and GitHub builds and publishes the release
 ```
 
 ## Changing the hotkey
